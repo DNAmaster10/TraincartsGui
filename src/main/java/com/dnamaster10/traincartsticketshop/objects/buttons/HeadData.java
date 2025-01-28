@@ -16,7 +16,13 @@ import java.util.UUID;
 import static com.dnamaster10.traincartsticketshop.TraincartsTicketShop.getPlugin;
 import static com.dnamaster10.traincartsticketshop.objects.buttons.DataKeys.HEAD_TYPE;
 
+/**
+ * Holds information and methods used for custom head items, such as the texture sources.
+ */
 public class HeadData {
+    /**
+     * Links head enums to their corresponding texture
+     */
     public enum HeadType {
         RED_CROSS("https://textures.minecraft.net/texture/beb588b21a6f98ad1ff4e085c552dcb050efc9cab427f46048f18fc803475f7"),
         GRAY_BACK_ARROW("https://textures.minecraft.net/texture/1b701c1f05e319d6b28f61b28b66a7e2a846a510de322bdc96e94a2388b78469"),
@@ -28,6 +34,7 @@ public class HeadData {
             this.url = url;
         }
     }
+
     private static final UUID RANDOM_UUID = UUID.fromString("68f92a5b-8980-4e0c-a479-89e41ce1ada6");
     private static PlayerProfile getProfile(HeadType type) {
         PlayerProfile profile = Bukkit.createPlayerProfile(RANDOM_UUID);
@@ -43,6 +50,13 @@ public class HeadData {
         profile.setTextures(textures);
         return profile;
     }
+
+    /**
+     * Gets a new head ItemStack, and applies the corresponding textures to the head.
+     *
+     * @param type The head type to be made
+     * @return The head
+     */
     public static ItemStack getPlayerHeadItem(HeadType type) {
         PlayerProfile headProfile = getProfile(type);
         if (headProfile == null) {
@@ -59,6 +73,13 @@ public class HeadData {
         head.setItemMeta(meta);
         return head;
     }
+
+    /**
+     * Gets the HeadType from a head ItemStack.
+     *
+     * @param item The item stack of the item to get the head type from
+     * @return The HeadType. Returns null if the ItemStack is not a valid HeadType
+     */
     public static HeadType getHeadTypeFromItem(ItemStack item) {
         if (!(item.getItemMeta() instanceof SkullMeta meta)) {
             return null;

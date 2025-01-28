@@ -9,11 +9,15 @@ import org.bukkit.util.StringUtil;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The top level argument completer for all ticket related commands.
+ */
 public class TicketTabCompleter extends ArgumentCompleter {
     private static final List<String> ARGS1;
     static {
         ARGS1 = new ArrayList<>();
         ARGS1.add("create");
+        ARGS1.add("removePurchaseMessage");
         ARGS1.add("rename");
         ARGS1.add("setTraincartsTicket");
         ARGS1.add("setPurchaseMessage");
@@ -53,7 +57,7 @@ public class TicketTabCompleter extends ArgumentCompleter {
             case "settraincartsticket" -> {
                 return new TicketSetTraincartsTicketTabCompleter().getCompletions(sender, args);
             }
-            case "rename", "setpurchasemessage" -> {
+            case "rename", "removepurchasemessage", "setpurchasemessage" -> {
                 return new ArrayList<>();
             }
         }

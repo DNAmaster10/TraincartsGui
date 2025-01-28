@@ -1,18 +1,21 @@
 package com.dnamaster10.traincartsticketshop.commands.commandhandlers.gui;
 
 import com.dnamaster10.traincartsticketshop.commands.commandhandlers.AsyncCommandHandler;
+import com.dnamaster10.traincartsticketshop.util.Utilities;
+import com.dnamaster10.traincartsticketshop.util.database.databaseobjects.GuiDatabaseObject;
 import com.dnamaster10.traincartsticketshop.util.exceptions.ModificationException;
-import com.dnamaster10.traincartsticketshop.util.exceptions.QueryException;
-import com.dnamaster10.traincartsticketshop.util.newdatabase.accessors.GuiDataAccessor;
+import com.dnamaster10.traincartsticketshop.util.database.accessors.GuiDataAccessor;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+/**
+ * The command handler for the /tshop gui setId command.
+ */
 public class SetGuiIdCommandHandler extends AsyncCommandHandler {
-    //Example command: /traincartsticketshop gui rename old_name new_name
-    //TODO should probably only be renameable by the owner
+    //Example command: /traincartsticketshop gui setId <old ID> <new ID>
     private GuiDataAccessor guiAccessor;
-    private int guiId;
+    private GuiDatabaseObject gui;
 
     @Override
     protected boolean checkSync(CommandSender sender, String[] args) {
@@ -29,7 +32,7 @@ public class SetGuiIdCommandHandler extends AsyncCommandHandler {
             returnError(sender, "Gui IDs cannot be more than 20 characters in length");
             return false;
         }
-        if (args[3].length() < 3) {
+        if (args[3].isBlank()) {
             returnError(sender, "Gui IDs cannot be less than 3 characters in length");
             return false;
         }
@@ -38,7 +41,7 @@ public class SetGuiIdCommandHandler extends AsyncCommandHandler {
             returnGuiNotFoundError(sender, args[2]);
             return false;
         }
-        if (!checkStringFormat(args[3])) {
+        if (Utilities.checkSpecialCharacters(args[3])) {
             returnError(sender, "Gui IDs can only contain letters Aa - Zz, numbers, underscores and dashes");
             return false;
         }
@@ -56,7 +59,7 @@ public class SetGuiIdCommandHandler extends AsyncCommandHandler {
     }
 
     @Override
-    protected boolean checkAsync(CommandSender sender, String[] args) throws QueryException {
+    protected boolean checkAsync(CommandSender sender, String[] args) {
         guiAccessor = new GuiDataAccessor();
 
         //Get the gui ID and check that it exists
@@ -64,13 +67,13 @@ public class SetGuiIdCommandHandler extends AsyncCommandHandler {
             returnGuiNotFoundError(sender, args[2]);
             return false;
         }
-        guiId = guiAccessor.getGuiIdByName(args[2]);
+        gui = guiAccessor.getGuiByName(args[2]);
 
         //If sender is player, check that player is an editor of that gui if they don't have admin perms
         if (sender instanceof Player p) {
             if (!p.hasPermission("traincartsticketshop.admin.gui.setid")) {
-                if (!guiAccessor.playerCanEdit(guiId, p.getUniqueId().toString())) {
-                    returnError(sender, "You do not have permission to edit that gui. Request that the owner adds you as an editor before making any changes");
+                if (!gui.ownerUuid().equalsIgnoreCase(p.getUniqueId().toString())) {
+                    returnError(sender, "You must be the owner of a Gui to change its ID.");
                     return false;
                 }
             }
@@ -86,7 +89,7 @@ public class SetGuiIdCommandHandler extends AsyncCommandHandler {
 
     @Override
     protected void execute(CommandSender sender, String[] args) throws ModificationException {
-        guiAccessor.updateGuiName(guiId, args[3]);
+        guiAccessor.updateGuiName(gui.id(), args[3]);
         sender.sendMessage(ChatColor.GREEN + "Gui \"" + args[2] + "\"'s ID was successfully changed to \"" + args[3] + "\"");
     }
 }

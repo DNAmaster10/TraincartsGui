@@ -13,6 +13,9 @@ import org.bukkit.persistence.PersistentDataType;
 import static com.dnamaster10.traincartsticketshop.util.ButtonUtils.getButtonType;
 import static com.dnamaster10.traincartsticketshop.objects.buttons.DataKeys.TC_TICKET_NAME;
 
+/**
+ * The command handler for the /tshop ticket setTraincartsTicket command.
+ */
 public class TicketSetTraincartsTicket extends SyncCommandHandler {
     //Example command: /tshop ticket setTraincartsTicket <traincarts ticket>
     Player player;

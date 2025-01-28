@@ -2,18 +2,20 @@ package com.dnamaster10.traincartsticketshop.commands.commandhandlers.gui;
 
 import com.dnamaster10.traincartsticketshop.commands.commandhandlers.AsyncCommandHandler;
 import com.dnamaster10.traincartsticketshop.objects.guis.EditGui;
-import com.dnamaster10.traincartsticketshop.util.Session;
-import com.dnamaster10.traincartsticketshop.util.exceptions.QueryException;
-import com.dnamaster10.traincartsticketshop.util.newdatabase.accessors.GuiDataAccessor;
+import com.dnamaster10.traincartsticketshop.util.database.databaseobjects.GuiDatabaseObject;
+import com.dnamaster10.traincartsticketshop.util.database.accessors.GuiDataAccessor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import static com.dnamaster10.traincartsticketshop.TraincartsTicketShop.getPlugin;
 
+/**
+ * The command handler for the /tshop gui edit command.
+ */
 public class EditGuiCommandHandler extends AsyncCommandHandler {
-    //Example command: /tshop gui edit <gui name>
+    //Example command: /tshop gui edit <gui ID>
     private Player player;
-    private int guiId;
+    private GuiDatabaseObject gui;
     @Override
     protected boolean checkSync(CommandSender sender, String[] args) {
         //Check sender is player and permissions
@@ -30,7 +32,7 @@ public class EditGuiCommandHandler extends AsyncCommandHandler {
 
         //Check syntax
         if (args.length < 3)  {
-            returnMissingArgumentsError(player, "/tshop gui edit <gui name>");
+            returnMissingArgumentsError(player, "/tshop gui edit <gui ID>");
             return false;
         }
         if (args.length > 3) {
@@ -46,7 +48,7 @@ public class EditGuiCommandHandler extends AsyncCommandHandler {
     }
 
     @Override
-    protected boolean checkAsync(CommandSender sender, String[] args) throws QueryException {
+    protected boolean checkAsync(CommandSender sender, String[] args) {
         //Example command: /traincartsticketshop gui edit <gui_name>
         GuiDataAccessor guiAccessor = new GuiDataAccessor();
 
@@ -55,11 +57,11 @@ public class EditGuiCommandHandler extends AsyncCommandHandler {
             returnGuiNotFoundError(player, args[2]);
             return false;
         }
-        guiId = guiAccessor.getGuiIdByName(args[2]);
+        gui = guiAccessor.getGuiByName(args[2]);
 
         //Check that player is owner or editor of gui
         if (!player.hasPermission("traincartsticketshop.admin.gui.edit")) {
-            if (!guiAccessor.playerCanEdit(guiId, player.getUniqueId().toString())) {
+            if (!guiAccessor.playerCanEdit(gui.id(), player.getUniqueId().toString())) {
                 returnError(player, "You do not have permission to edit that gui. Request that the owner adds you as an editor before making any changes");
                 return false;
             }
@@ -68,17 +70,14 @@ public class EditGuiCommandHandler extends AsyncCommandHandler {
     }
 
     @Override
-    protected void execute(CommandSender sender, String[] args) throws QueryException {
-        //Create the new gui
-        EditGui gui = new EditGui(guiId, player);
-
+    protected void execute(CommandSender sender, String[] args) {
         //Open a new gui session
-        Session session = getPlugin().getGuiManager().getNewSession(player);
+        getPlugin().getGuiManager().openNewSession(player);
 
-        //Register the gui
-        session.addGui(gui);
+        //Create the new gui
+        EditGui editGui = new EditGui(player, gui.id());
 
         //Open the new gui
-        gui.open();
+        editGui.open();
     }
 }

@@ -8,8 +8,9 @@ import org.bukkit.util.StringUtil;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.dnamaster10.traincartsticketshop.TraincartsTicketShop.getPlugin;
-
+/**
+ * The top level argument completer for all Gui related commands.
+ */
 public class GuiTabCompleter extends ArgumentCompleter {
     //Example command: /tshop gui <arg1>
     private static final List<String> ARGS1;
@@ -20,7 +21,6 @@ public class GuiTabCompleter extends ArgumentCompleter {
         ARGS1.add("create");
         ARGS1.add("delete");
         ARGS1.add("edit");
-        ARGS1.add("listEditors");
         ARGS1.add("open");
         ARGS1.add("removeEditor");
         ARGS1.add("rename");

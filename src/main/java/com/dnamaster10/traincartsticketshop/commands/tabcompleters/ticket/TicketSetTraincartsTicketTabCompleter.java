@@ -8,6 +8,9 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The argument completer for the /tshop ticket setTraincartsTicket command.
+ */
 public class TicketSetTraincartsTicketTabCompleter extends ArgumentCompleter {
     //Example command: /tshop ticket setTraincartsTicket <tc ticket name>
     @Override

@@ -1,10 +1,8 @@
 package com.dnamaster10.traincartsticketshop.commands.commandhandlers.gui;
 
 import com.dnamaster10.traincartsticketshop.commands.commandhandlers.AsyncCommandHandler;
-import com.dnamaster10.traincartsticketshop.objects.guis.multipageguis.TicketSearchGui;
-import com.dnamaster10.traincartsticketshop.util.Session;
-import com.dnamaster10.traincartsticketshop.util.exceptions.QueryException;
-import com.dnamaster10.traincartsticketshop.util.newdatabase.accessors.GuiDataAccessor;
+import com.dnamaster10.traincartsticketshop.objects.guis.TicketSearchGui;
+import com.dnamaster10.traincartsticketshop.util.database.accessors.GuiDataAccessor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -12,8 +10,11 @@ import java.util.StringJoiner;
 
 import static com.dnamaster10.traincartsticketshop.TraincartsTicketShop.getPlugin;
 
+/**
+ * The command handler for the /tshop gui searchTickets command.
+ */
 public class SearchTicketsCommandHandler extends AsyncCommandHandler {
-    //Example command: /traincartsticketshop gui searchTickets <gui name> <search term>
+    //Example command: /traincartsticketshop gui searchTickets <gui ID> <search term>
     private String searchTerm;
     private GuiDataAccessor guiAccessor;
     private Player player;
@@ -33,7 +34,7 @@ public class SearchTicketsCommandHandler extends AsyncCommandHandler {
 
         //Check syntax
         if (args.length < 4) {
-            returnMissingArgumentsError(player, "/tshop gui searchTickets <gui name> <search term>");
+            returnMissingArgumentsError(player, "/tshop gui searchTickets <gui ID> <search term>");
             return false;
         }
         if (!checkGuiNameSyntax(args[2])) {
@@ -58,7 +59,7 @@ public class SearchTicketsCommandHandler extends AsyncCommandHandler {
     }
 
     @Override
-    protected boolean checkAsync(CommandSender sender, String[] args) throws QueryException {
+    protected boolean checkAsync(CommandSender sender, String[] args) {
         //Check gui exists
         guiAccessor = new GuiDataAccessor();
         if (!guiAccessor.checkGuiByName(args[2])) {
@@ -69,18 +70,15 @@ public class SearchTicketsCommandHandler extends AsyncCommandHandler {
     }
 
     @Override
-    protected void execute(CommandSender sender, String[] args) throws QueryException {
+    protected void execute(CommandSender sender, String[] args) {
+        //Open a new gui session for the player
+        getPlugin().getGuiManager().openNewSession(player);
+
         //Get the new gui id
         int guiId = guiAccessor.getGuiIdByName(args[2]);
 
         //Create new gui
-        TicketSearchGui gui = new TicketSearchGui(guiId, searchTerm, 0, player);
-
-        //Open a new gui session for the player
-        Session session = getPlugin().getGuiManager().getNewSession(player);
-
-        //Register the new gui
-        session.addGui(gui);
+        TicketSearchGui gui = new TicketSearchGui(player, guiId, searchTerm);
 
         //Open the gui to the player
         gui.open();

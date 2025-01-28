@@ -11,6 +11,13 @@ import static com.dnamaster10.traincartsticketshop.objects.buttons.DataKeys.*;
 
 public class ButtonUtils {
     //A utility class for buttons
+
+    /**
+     * Extracts the button type of the input ItemStack
+     *
+     * @param button The ItemStack
+     * @return Returns the button type of the input ItemStack. Returns null if the item is not a button.
+     */
     public static String getButtonType(ItemStack button) {
         //Returns the button type from a given item
         //First check if item is a button
@@ -24,6 +31,14 @@ public class ButtonUtils {
 
         return dataContainer.get(BUTTON_TYPE, PersistentDataType.STRING);
     }
+
+    /**
+     * Creates a new Button object given a button type and an ItemStack. Used in the Edit Gui to convert an inventory into Buttons.
+     *
+     * @param buttonType The button type
+     * @param item The ItemStack
+     * @return A new Button Object. Returns null if the input ItemStack is not a valid button
+     */
     public static Button getNewButton(String buttonType, ItemStack item) {
         //Returns a new button object from a button type and an item
         //If any of the item keys are invalid, null will be returned
@@ -35,7 +50,7 @@ public class ButtonUtils {
         String displayName = meta.getDisplayName();
 
         switch (buttonType) {
-            //TODO maybe move each of these into their own method?
+            //TODO maybe move each of these into their own method when more buttons are added?
             case "ticket" -> {
                 PersistentDataContainer dataContainer = meta.getPersistentDataContainer();
                 if (!dataContainer.has(TC_TICKET_NAME, PersistentDataType.STRING)) {

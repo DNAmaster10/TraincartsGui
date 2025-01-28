@@ -13,6 +13,9 @@ import org.bukkit.persistence.PersistentDataType;
 import static com.dnamaster10.traincartsticketshop.util.ButtonUtils.getButtonType;
 import static com.dnamaster10.traincartsticketshop.objects.buttons.DataKeys.DEST_GUI_PAGE;
 
+/**
+ * The command handler for the /tshop link setDestinationPage command.
+ */
 public class LinkSetDestinationPageCommandHandler extends SyncCommandHandler {
     //Example command: /traincartsticketshop link setDestinationPage <destination page>
     private Player player;
@@ -40,8 +43,8 @@ public class LinkSetDestinationPageCommandHandler extends SyncCommandHandler {
             returnInvalidSubCommandError(player, args[3]);
             return false;
         }
-        if (!Utilities.isInt(args[2])) {
-            returnError(player, "Page number must be a valid integer");
+        if (!Utilities.isInt(args[2]) || Integer.parseInt(args[2]) < 1) {
+            returnError(player, "Page number must be a positive integer more than or equal to 1");
             return false;
         }
 

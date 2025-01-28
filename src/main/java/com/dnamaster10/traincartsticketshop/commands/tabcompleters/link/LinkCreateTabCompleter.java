@@ -1,13 +1,16 @@
 package com.dnamaster10.traincartsticketshop.commands.tabcompleters.link;
 
 import com.dnamaster10.traincartsticketshop.commands.tabcompleters.ArgumentCompleter;
-import com.dnamaster10.traincartsticketshop.util.newdatabase.accessors.GuiDataAccessor;
+import com.dnamaster10.traincartsticketshop.util.database.accessors.GuiDataAccessor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The argument completer used for the /tshop link create command.
+ */
 public class LinkCreateTabCompleter extends ArgumentCompleter {
     //Example command: /tshop link create <gui name> <optional display name>
     @Override

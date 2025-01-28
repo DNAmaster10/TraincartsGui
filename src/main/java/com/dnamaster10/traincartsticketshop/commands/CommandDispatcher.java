@@ -1,22 +1,19 @@
 package com.dnamaster10.traincartsticketshop.commands;
 
-import com.dnamaster10.traincartsticketshop.commands.commandhandlers.gui.RemoveEditorCommandHandler;
 import com.dnamaster10.traincartsticketshop.commands.commandhandlers.gui.*;
-import com.dnamaster10.traincartsticketshop.commands.commandhandlers.gui.AddEditorCommandHandler;
 import com.dnamaster10.traincartsticketshop.commands.commandhandlers.link.LinkCreateCommandHandler;
 import com.dnamaster10.traincartsticketshop.commands.commandhandlers.link.LinkRenameCommandHandler;
 import com.dnamaster10.traincartsticketshop.commands.commandhandlers.link.LinkSetDestinationPageCommandHandler;
-import com.dnamaster10.traincartsticketshop.commands.commandhandlers.gui.OpenGuiCommandHandler;
-import com.dnamaster10.traincartsticketshop.commands.commandhandlers.ticket.TicketCreateCommandHandler;
-import com.dnamaster10.traincartsticketshop.commands.commandhandlers.ticket.TicketRenameCommandHandler;
-import com.dnamaster10.traincartsticketshop.commands.commandhandlers.ticket.TicketSetPurchaseMessageCommandHandler;
-import com.dnamaster10.traincartsticketshop.commands.commandhandlers.ticket.TicketSetTraincartsTicket;
+import com.dnamaster10.traincartsticketshop.commands.commandhandlers.ticket.*;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Contains the top-level method used to send all commands.
+ */
 public class CommandDispatcher implements CommandExecutor {
     private void returnError(CommandSender sender, String error) {
         sender.sendMessage(ChatColor.RED + error);
@@ -24,6 +21,16 @@ public class CommandDispatcher implements CommandExecutor {
     private void returnInvalidSubCommandError(CommandSender sender, String argument) {
         returnError(sender, "Invalid sub-command \"" + argument + "\"");
     }
+
+    /**
+     * The method used to send all commands. Checks arguments to determine which CommandHandler should be used.
+     *
+     * @param sender The CommandSender
+     * @param command The command
+     * @param label The label
+     * @param args The command arguments
+     * @return True
+     */
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         //Check that a sub-command was provided
@@ -55,6 +62,7 @@ public class CommandDispatcher implements CommandExecutor {
             case "ticket" -> {
                 switch (args[1].toLowerCase()) {
                     case "create" -> new TicketCreateCommandHandler().handle(sender, args);
+                    case "removepurchasemessage" -> new TicketRemovePurchaseMessageCommandHandler().handle(sender, args);
                     case "rename" -> new TicketRenameCommandHandler().handle(sender, args);
                     case "settraincartsticket" -> new TicketSetTraincartsTicket().handle(sender, args);
                     case "setpurchasemessage" -> new TicketSetPurchaseMessageCommandHandler().handle(sender, args);

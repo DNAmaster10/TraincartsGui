@@ -10,6 +10,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The main tab completer used for all tab completions. Determines which other tab completers should be called by evaluating current arguments.
+ */
 public class MainTabCompleter implements org.bukkit.command.TabCompleter {
     private static final List<String> ARGS0;
     static {
@@ -19,6 +22,11 @@ public class MainTabCompleter implements org.bukkit.command.TabCompleter {
         ARGS0.add("link");
     }
 
+    /**
+     * The main method which is called.
+     *
+     * @return The text to display for the tab completion
+     */
     @Nullable
     @Override
     public List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
