@@ -8,6 +8,9 @@ import org.bukkit.util.StringUtil;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The top level argument completer for all link related commands.
+ */
 public class LinkTabCompleter extends ArgumentCompleter {
     private static final List<String> ARGS1;
     static {

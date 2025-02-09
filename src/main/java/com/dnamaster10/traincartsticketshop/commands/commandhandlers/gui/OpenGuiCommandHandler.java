@@ -1,15 +1,16 @@
 package com.dnamaster10.traincartsticketshop.commands.commandhandlers.gui;
 
 import com.dnamaster10.traincartsticketshop.commands.commandhandlers.AsyncCommandHandler;
-import com.dnamaster10.traincartsticketshop.objects.guis.multipageguis.ShopGui;
-import com.dnamaster10.traincartsticketshop.util.Session;
-import com.dnamaster10.traincartsticketshop.util.exceptions.QueryException;
-import com.dnamaster10.traincartsticketshop.util.newdatabase.accessors.GuiDataAccessor;
+import com.dnamaster10.traincartsticketshop.objects.guis.ShopGui;
+import com.dnamaster10.traincartsticketshop.util.database.accessors.GuiDataAccessor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import static com.dnamaster10.traincartsticketshop.TraincartsTicketShop.getPlugin;
 
+/**
+ * The command handler for the /shop gui open command.
+ */
 public class OpenGuiCommandHandler extends AsyncCommandHandler {
     private Player player;
     private GuiDataAccessor guiAccessor;
@@ -31,7 +32,7 @@ public class OpenGuiCommandHandler extends AsyncCommandHandler {
 
         //Check syntax
         if (args.length < 3) {
-            returnMissingArgumentsError(sender, "/tshop gui open <gui name>");
+            returnMissingArgumentsError(sender, "/tshop gui open <gui ID>");
             return false;
         }
         if (args.length > 3) {
@@ -47,7 +48,7 @@ public class OpenGuiCommandHandler extends AsyncCommandHandler {
     }
 
     @Override
-    protected boolean checkAsync(CommandSender sender, String[] args) throws QueryException {
+    protected boolean checkAsync(CommandSender sender, String[] args) {
         //Example command: /traincartsticketshop gui open <gui_name>
         guiAccessor = new GuiDataAccessor();
 
@@ -60,16 +61,13 @@ public class OpenGuiCommandHandler extends AsyncCommandHandler {
     }
 
     @Override
-    protected void execute(CommandSender sender, String[] args) throws QueryException {
+    protected void execute(CommandSender sender, String[] args) {
+        //Create a new gui session
+        getPlugin().getGuiManager().openNewSession(player);
+
         //Create a new gui
         int guiId = guiAccessor.getGuiIdByName(args[2]);
-        ShopGui gui = new ShopGui(guiId, player);
-
-        //Create a new gui session
-        Session session = getPlugin().getGuiManager().getNewSession(player);
-
-        //Register the new gui
-        session.addGui(gui);
+        ShopGui gui = new ShopGui(player, guiId);
 
         //Open the new gui
         gui.open();

@@ -1,21 +1,23 @@
 package com.dnamaster10.traincartsticketshop.commands.commandhandlers.gui;
 
 import com.dnamaster10.traincartsticketshop.commands.commandhandlers.AsyncCommandHandler;
-import com.dnamaster10.traincartsticketshop.objects.guis.confirmguis.ConfirmGuiDeleteGui;
-import com.dnamaster10.traincartsticketshop.util.Session;
+import com.dnamaster10.traincartsticketshop.objects.guis.ConfirmGuiDeleteGui;
+import com.dnamaster10.traincartsticketshop.util.database.databaseobjects.GuiDatabaseObject;
 import com.dnamaster10.traincartsticketshop.util.exceptions.ModificationException;
-import com.dnamaster10.traincartsticketshop.util.exceptions.QueryException;
-import com.dnamaster10.traincartsticketshop.util.newdatabase.accessors.GuiDataAccessor;
+import com.dnamaster10.traincartsticketshop.util.database.accessors.GuiDataAccessor;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import static com.dnamaster10.traincartsticketshop.TraincartsTicketShop.getPlugin;
 
+/**
+ * The command handler for the /tshop gui delete command handler.
+ */
 public class DeleteGuiCommandHandler extends AsyncCommandHandler {
-    //Command example: /traincartsticketshop gui delete <gui_name>
+    //Command example: /traincartsticketshop gui delete <gui ID>
     private GuiDataAccessor guiAccessor;
-    private int guiId;
+    private GuiDatabaseObject gui;
     @Override
     protected boolean checkSync(CommandSender sender, String[] args) {
         //Check permissions if player
@@ -32,7 +34,7 @@ public class DeleteGuiCommandHandler extends AsyncCommandHandler {
             return false;
         }
         if (args.length < 3) {
-            returnMissingArgumentsError(sender, "/tshop gui delete <gui name>");
+            returnMissingArgumentsError(sender, "/tshop gui delete <gui ID>");
             return false;
         }
         if (!checkGuiNameSyntax(args[2])) {
@@ -44,7 +46,7 @@ public class DeleteGuiCommandHandler extends AsyncCommandHandler {
     }
 
     @Override
-    protected boolean checkAsync(CommandSender sender, String[] args) throws QueryException {
+    protected boolean checkAsync(CommandSender sender, String[] args) {
         guiAccessor = new GuiDataAccessor();
 
         //Check gui exists
@@ -52,14 +54,14 @@ public class DeleteGuiCommandHandler extends AsyncCommandHandler {
             returnGuiNotFoundError(sender, args[2]);
             return false;
         }
-        //Get the guiId
-        guiId = guiAccessor.getGuiIdByName(args[2]);
+        //Get the gui
+        gui = guiAccessor.getGuiByName(args[2]);
 
         //If sender is player, check they are owner
         if (sender instanceof Player p) {
             if (!p.hasPermission("traincartsticketshop.admin.gui.delete")) {
-                if (!guiAccessor.checkGuiOwnerByUuid(guiId, p.getUniqueId().toString())) {
-                    returnError(p, "You must be the owner of the gui in order to delete it");
+                if (!gui.ownerUuid().equalsIgnoreCase(p.getUniqueId().toString())) {
+                    returnError(p, "You must own the gui in order to delete it");
                     return false;
                 }
             }
@@ -69,16 +71,15 @@ public class DeleteGuiCommandHandler extends AsyncCommandHandler {
 
     @Override
     protected void execute(CommandSender sender, String[] args) throws ModificationException {
-        if (sender instanceof Player p) {
-            ConfirmGuiDeleteGui newGui = new ConfirmGuiDeleteGui(guiId, p);
-            Session session = getPlugin().getGuiManager().getNewSession(p);
-            session.addGui(newGui);
+        if (sender instanceof Player player) {
+            getPlugin().getGuiManager().openNewSession(player);
+            ConfirmGuiDeleteGui newGui = new ConfirmGuiDeleteGui(player, gui.id());
             newGui.open();
             return;
         }
         //If sender isn't a player, we don't need to bother with a confirm action gui.
         //Delete the gui.
-        guiAccessor.deleteGuiById(guiId);
+        guiAccessor.deleteGui(gui.id());
         sender.sendMessage(ChatColor.GREEN + "Gui \"" + args[2] + "\" was deleted");
     }
 }

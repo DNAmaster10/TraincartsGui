@@ -8,8 +8,9 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.dnamaster10.traincartsticketshop.TraincartsTicketShop.getPlugin;
-
+/**
+ * The argument completer used for the /tshop ticket create command.
+ */
 public class TicketCreateTabCompleter extends ArgumentCompleter {
     //Example command: /tshop ticket create <tc ticket name> <optional display name>
     @Override

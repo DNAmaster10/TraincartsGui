@@ -7,10 +7,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.StringJoiner;
-
 import static com.dnamaster10.traincartsticketshop.util.ButtonUtils.getButtonType;
 
+/**
+ * The command handler for the /tshop ticket rename command.
+ */
 public class TicketRenameCommandHandler extends SyncCommandHandler {
     //Example command: /tshop ticket rename <new_name>
     private String colouredDisplayName;
@@ -32,16 +33,15 @@ public class TicketRenameCommandHandler extends SyncCommandHandler {
 
         //Check syntax
         if (args.length < 3) {
-            returnError(player, "Please enter a new name for the ticket");
+            returnMissingArgumentsError(player, "/tshop ticket rename <new name>");
+            return false;
+        }
+        if (args.length > 3) {
+            returnInvalidSubCommandError(player, args[3]);
             return false;
         }
 
-        //Build display name
-        StringJoiner stringJoiner = new StringJoiner(" ");
-        for (int i = 2; i < args.length; i++) {
-            stringJoiner.add(args[i]);
-        }
-        colouredDisplayName = ChatColor.translateAlternateColorCodes('&', stringJoiner.toString());
+        colouredDisplayName = ChatColor.translateAlternateColorCodes('&', args[2]);
         String rawDisplayName = ChatColor.stripColor(colouredDisplayName);
 
         if (rawDisplayName.length() > 25) {

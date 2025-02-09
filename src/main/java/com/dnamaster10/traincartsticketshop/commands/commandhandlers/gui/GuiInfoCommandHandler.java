@@ -1,20 +1,27 @@
 package com.dnamaster10.traincartsticketshop.commands.commandhandlers.gui;
 
 import com.dnamaster10.traincartsticketshop.commands.commandhandlers.AsyncCommandHandler;
+import com.dnamaster10.traincartsticketshop.util.database.accessors.GuiEditorsDataAccessor;
+import com.dnamaster10.traincartsticketshop.util.database.databaseobjects.GuiDatabaseObject;
 import com.dnamaster10.traincartsticketshop.util.exceptions.QueryException;
-import com.dnamaster10.traincartsticketshop.util.newdatabase.accessors.GuiDataAccessor;
-import com.dnamaster10.traincartsticketshop.util.newdatabase.accessors.LinkDataAccessor;
-import com.dnamaster10.traincartsticketshop.util.newdatabase.accessors.TicketDataAccessor;
+import com.dnamaster10.traincartsticketshop.util.database.accessors.GuiDataAccessor;
+import com.dnamaster10.traincartsticketshop.util.database.accessors.LinkDataAccessor;
+import com.dnamaster10.traincartsticketshop.util.database.accessors.TicketDataAccessor;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import net.md_5.bungee.api.chat.*;
 
+import java.util.List;
+
+/**
+ * The command handler for the /tshop gui info command.
+ */
 public class GuiInfoCommandHandler extends AsyncCommandHandler {
-    //Example command: /tshop gui info <gui name>
+    //Example command: /tshop gui info <gui ID>
 
     GuiDataAccessor guiAccessor;
-    int guiId;
+    GuiDatabaseObject gui;
     @Override
     protected boolean checkSync(CommandSender sender, String[] args) {
         //Check permissions
@@ -27,7 +34,7 @@ public class GuiInfoCommandHandler extends AsyncCommandHandler {
 
         //Check syntax
         if (args.length < 3) {
-            returnMissingArgumentsError(sender, "/tshop gui info <gui name>");
+            returnMissingArgumentsError(sender, "/tshop gui info <gui ID>");
             return false;
         }
         if (args.length > 3) {
@@ -43,7 +50,7 @@ public class GuiInfoCommandHandler extends AsyncCommandHandler {
     }
 
     @Override
-    protected boolean checkAsync(CommandSender sender, String[] args) throws QueryException {
+    protected boolean checkAsync(CommandSender sender, String[] args) {
         guiAccessor = new GuiDataAccessor();
 
         //Check gui exists
@@ -51,37 +58,38 @@ public class GuiInfoCommandHandler extends AsyncCommandHandler {
             returnGuiNotFoundError(sender, args[2]);
             return false;
         }
-        guiId = guiAccessor.getGuiIdByName(args[2]);
+        gui = guiAccessor.getGuiByName(args[2]);
 
         return true;
     }
 
     @Override
     protected void execute(CommandSender sender, String[] args) throws QueryException {
-        //TODO needs changing
         //Fetch info
-        String guiName = guiAccessor.getGuiNameById(guiId);
-        String owner = guiAccessor.getOwnerUsername(guiId);
-        int totalPages = guiAccessor.getHighestPageNumber(guiId) + 1;
+        int totalPages = guiAccessor.getHighestPageNumber(gui.id()) + 1;
 
         TicketDataAccessor ticketAccessor = new TicketDataAccessor();
         LinkDataAccessor linkAccessor = new LinkDataAccessor();
+        GuiEditorsDataAccessor guiEditorsDataAccessor = new GuiEditorsDataAccessor();
 
-        int totalTickets = ticketAccessor.getTotalTickets(guiId);
-        int totalLinks = linkAccessor.getTotalLinks(guiId);
+        List<String> guiEditors = guiEditorsDataAccessor.getEditorUsernames(gui.id());
+        int totalTickets = ticketAccessor.getTotalTickets(gui.id());
+        int totalLinks = linkAccessor.getTotalLinks(gui.id());
 
         //Send info to player
         TextComponent line;
-        line = new TextComponent(ChatColor.AQUA + "Info for gui \"" + guiName + "\":");
+        line = new TextComponent(ChatColor.AQUA + "Info for gui \"" + gui.name() + "\":");
         sender.spigot().sendMessage(line);
 
-        line = new TextComponent(ChatColor.WHITE + "| Owner: " + owner);
+        line = new TextComponent(ChatColor.WHITE + "| Owner: " + guiAccessor.getOwnerUsername(gui.id()));
         sender.spigot().sendMessage(line);
         line = new TextComponent(ChatColor.WHITE + "| Pages: " + totalPages);
         sender.spigot().sendMessage(line);
         line = new TextComponent(ChatColor.WHITE + "| Tickets: " + totalTickets);
         sender.spigot().sendMessage(line);
         line = new TextComponent(ChatColor.WHITE + "| Links: " + totalLinks);
+        sender.spigot().sendMessage(line);
+        line = new TextComponent(ChatColor.WHITE + "| Editors: " + String.join(",", guiEditors));
         sender.spigot().sendMessage(line);
     }
 }

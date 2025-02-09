@@ -1,10 +1,8 @@
 package com.dnamaster10.traincartsticketshop.commands.commandhandlers.gui;
 
 import com.dnamaster10.traincartsticketshop.commands.commandhandlers.AsyncCommandHandler;
-import com.dnamaster10.traincartsticketshop.objects.guis.multipageguis.LinkSearchGui;
-import com.dnamaster10.traincartsticketshop.util.Session;
-import com.dnamaster10.traincartsticketshop.util.exceptions.QueryException;
-import com.dnamaster10.traincartsticketshop.util.newdatabase.accessors.GuiDataAccessor;
+import com.dnamaster10.traincartsticketshop.objects.guis.LinkSearchGui;
+import com.dnamaster10.traincartsticketshop.util.database.accessors.GuiDataAccessor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -12,8 +10,11 @@ import java.util.StringJoiner;
 
 import static com.dnamaster10.traincartsticketshop.TraincartsTicketShop.getPlugin;
 
+/**
+ * The command handler for the /tshop gui searchLinks command.
+ */
 public class SearchLinksCommandHandler extends AsyncCommandHandler {
-    //Example command: /traincartsticketshop gui searchLinks <gui name> <search term>
+    //Example command: /traincartsticketshop gui searchLinks <gui ID> <search term>
     private String searchTerm;
     private GuiDataAccessor guiAccessor;
     private Player player;
@@ -33,7 +34,7 @@ public class SearchLinksCommandHandler extends AsyncCommandHandler {
 
         //Check syntax
         if (args.length < 4) {
-            returnMissingArgumentsError(player, "/tshop gui searchLinks <gui name> <search term>");
+            returnMissingArgumentsError(player, "/tshop gui searchLinks <gui ID> <search term>");
             return false;
         }
         //Check gui name
@@ -51,14 +52,14 @@ public class SearchLinksCommandHandler extends AsyncCommandHandler {
             return false;
         }
         if (searchTerm.isBlank()) {
-            returnError(player, "Search terms cannot be less than 1 character in length");
+            returnError(player, "Search term cannot be less than 1 character in length");
             return false;
         }
         return true;
     }
 
     @Override
-    protected boolean checkAsync(CommandSender sender, String[] args) throws QueryException {
+    protected boolean checkAsync(CommandSender sender, String[] args) {
         //Check gui exists
         guiAccessor = new GuiDataAccessor();
         if (!guiAccessor.checkGuiByName(args[2])) {
@@ -69,18 +70,15 @@ public class SearchLinksCommandHandler extends AsyncCommandHandler {
     }
 
     @Override
-    protected void execute(CommandSender sender, String[] args) throws QueryException {
+    protected void execute(CommandSender sender, String[] args) {
+        //Open a new session
+        getPlugin().getGuiManager().openNewSession(player);
+
         //Get the search gui id
         int searchGuiId = guiAccessor.getGuiIdByName(args[2]);
 
         //Create the search gui
-        LinkSearchGui gui = new LinkSearchGui(searchGuiId, searchTerm, 0, player);
-
-        //Open a new session
-        Session session = getPlugin().getGuiManager().getNewSession(player);
-
-        //Register the new gui
-        session.addGui(gui);
+        LinkSearchGui gui = new LinkSearchGui(player, searchGuiId, searchTerm);
 
         //Open the new gui
         gui.open();

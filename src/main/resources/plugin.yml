@@ -1,12 +1,15 @@
 name: TraincartsTicketShop
 version: '${project.version}'
 main: com.dnamaster10.traincartsticketshop.TraincartsTicketShop
-api-version: '1.20'
+api-version: '1.21'
 authors: [ DNAmaster10, Dinty1 ]
 description: Allows players to create ticket shop GUIs for the TrainCarts plugin
 database: true
 prefix: TraincartsTicketShop
-depend: [Train_Carts]
+depend:
+  - Train_Carts
+softdepend:
+  - Vault
 website: https://github.com/DNAmaster10/TraincartsTicketShop
 
 permissions:
@@ -22,29 +25,26 @@ permissions:
   traincartsticketshop.gui.edit:
     description: Allows editing guis
     default: false
-  traincartsticketshop.gui.listeditors:
-    descriptions: Allows player to view the editors of guis they own
-    default: false
   traincartsticketshop.gui.open:
-    description: Allows a player to open a gui
+    description: Allows player to open a gui
     default: false
   traincartsticketshop.gui.removeeditor:
-    description: Allows a player to remove an editor from a gui they own
+    description: Allows player to remove an editor from a gui they own
     default: false
   traincartsticketshop.gui.rename:
-    description: Allows a gui to be renamed
+    description: Allows player to rename a gui
     default: false
   traincartsticketshop.gui.search.tickets:
-    description: Allows a player to search tickets
+    description: Allows player to search tickets
     default: false
   traincartsticketshop.gui.search.links:
-    description: Allows a player to search links
+    description: Allows player to search links
     default: false
   traincartsticketshop.gui.setid:
-    description: Allows a gui ID to be changed
+    description: Allows player to change a gui ID
     default: false
   traincartsticketshop.gui.delete:
-    description: Allows deleting of guis
+    description: Allows player to delete guis
     default: false
   traincartsticketshop.gui.transfer:
     description: Allows player to transfer guis they own to other players
@@ -58,9 +58,6 @@ permissions:
     default: false
   traincartsticketshop.admin.gui.edit:
     description: Allows player to edit a gui even if they do not have edit perms
-    default: false
-  traincartsticketshop.admin.gui.listeditors:
-    description: Allows player to view editors for guis they don't own
     default: false
   traincartsticketshop.admin.gui.removeeditor:
     description: Allows player to remove editors from guis they don't own
@@ -78,11 +75,13 @@ permissions:
   traincartsticketshop.ticket.create:
     description: Allows the creation of TraincartsTicketShop tickets
     default: false
+  traincartsticketshop.ticket.removepurchasemessage:
+    description: Allows a player to remove the purchase message from a ticket
   traincartsticketshop.ticket.rename:
     description: Allows player to rename a held ticket
     default: false
   traincartsticketshop.ticket.settraincartsticket:
-    description: Allows a player to set the traincarts ticket for a ticket
+    description: Allows player to set the traincarts ticket for a ticket
     default: false
   traincartsticketshop.ticket.setpurchasemessage:
     description: Allows a player to set the purchase message for a ticket
@@ -95,11 +94,11 @@ permissions:
     description: Allows player to rename a link item
     default: false
   traincartsticketshop.link.setdestinationpage:
-    description: Allows a player to set a destination page for a link
+    description: Allows player to set a destination page for a link
     default: false
 
 commands:
   traincartsticketshop:
     description: The parent command for all TraincartsTicketShop commands
     usage: /traincartsticketshop <sub-command>
-    aliases: [tcticketshop, ticketshop, tshop, tcts]
+    aliases: [tshop]

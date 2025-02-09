@@ -2,17 +2,17 @@ package com.dnamaster10.traincartsticketshop.commands.commandhandlers.link;
 
 import com.dnamaster10.traincartsticketshop.commands.commandhandlers.AsyncCommandHandler;
 import com.dnamaster10.traincartsticketshop.objects.buttons.Link;
-import com.dnamaster10.traincartsticketshop.util.exceptions.QueryException;
-import com.dnamaster10.traincartsticketshop.util.newdatabase.accessors.GuiDataAccessor;
+import com.dnamaster10.traincartsticketshop.util.database.accessors.GuiDataAccessor;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.StringJoiner;
-
+/**
+ * The command for the /tshop link create command.
+ */
 public class LinkCreateCommandHandler extends AsyncCommandHandler {
-    //Example command: /tshop link create <linked gui name> <optional display name>
+    //Example command: /tshop link create <linked gui ID> <optional display name>
     private String colouredDisplayName;
     private Player player;
     private GuiDataAccessor guiAccessor;
@@ -31,7 +31,7 @@ public class LinkCreateCommandHandler extends AsyncCommandHandler {
         }
         //Check syntax
         if (args.length < 3) {
-            returnMissingArgumentsError(player, "/tshop link create <linked gui name> <optional display name>");
+            returnMissingArgumentsError(player, "/tshop link create <linked gui ID> <optional display name>");
             return false;
         }
         if (!checkGuiNameSyntax(args[2])) {
@@ -39,19 +39,11 @@ public class LinkCreateCommandHandler extends AsyncCommandHandler {
             return false;
         }
 
-        //Build display name
-        String rawDisplayName;
-        if (args.length > 3) {
-            StringJoiner stringJoiner = new StringJoiner(" ");
-            for (int i = 3; i < args.length; i++) {
-                stringJoiner.add(args[i]);
-            }
-            colouredDisplayName = ChatColor.translateAlternateColorCodes('&', stringJoiner.toString());
-            rawDisplayName = ChatColor.stripColor(colouredDisplayName);
-        } else {
-            colouredDisplayName = args[2];
-            rawDisplayName = args[2];
-        }
+        if (args.length > 3) colouredDisplayName = args[3];
+        else colouredDisplayName = args[2];
+        colouredDisplayName = ChatColor.translateAlternateColorCodes('&', colouredDisplayName);
+        String rawDisplayName = ChatColor.stripColor(colouredDisplayName);
+
         if (rawDisplayName.length() > 25) {
             returnError(player, "Link display names cannot be more than 25 characters in length");
             return false;
@@ -69,7 +61,7 @@ public class LinkCreateCommandHandler extends AsyncCommandHandler {
     }
 
     @Override
-    protected boolean checkAsync(CommandSender sender, String[] args) throws QueryException {
+    protected boolean checkAsync(CommandSender sender, String[] args) {
         guiAccessor = new GuiDataAccessor();
 
         //Check that the gui exists
@@ -82,7 +74,7 @@ public class LinkCreateCommandHandler extends AsyncCommandHandler {
     }
 
     @Override
-    protected void execute(CommandSender sender, String[] args) throws QueryException {
+    protected void execute(CommandSender sender, String[] args) {
         //Get gui ID
         int guiId = guiAccessor.getGuiIdByName(args[2]);
 

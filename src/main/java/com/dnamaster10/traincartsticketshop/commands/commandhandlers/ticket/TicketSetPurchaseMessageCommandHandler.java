@@ -9,15 +9,16 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
-import java.util.StringJoiner;
-
 import static com.dnamaster10.traincartsticketshop.util.ButtonUtils.getButtonType;
 import static com.dnamaster10.traincartsticketshop.objects.buttons.DataKeys.PURCHASE_MESSAGE;
 
+/**
+ * The command handler for the /tshop ticket setPurchaseMessage command.
+ */
 public class TicketSetPurchaseMessageCommandHandler extends SyncCommandHandler {
     //Example command: /tshop ticket setPurchaseMessage <message>
     private Player player;
-    private String displayText;
+    private String colouredDisplayText;
     private ItemStack ticket;
 
     @Override
@@ -39,17 +40,18 @@ public class TicketSetPurchaseMessageCommandHandler extends SyncCommandHandler {
             returnMissingArgumentsError(sender, "/tshop ticket setPurchaseMessage <message>");
             return false;
         }
+        if (args.length > 3) {
+            returnInvalidSubCommandError(player, args[3]);
+            return false;
+        }
 
-        //Build display text
-        StringJoiner stringJoiner = new StringJoiner(" ");
-        for (int i = 2; i < args.length; i++) stringJoiner.add(args[i]);
-        displayText = ChatColor.translateAlternateColorCodes('&', stringJoiner.toString());
+        colouredDisplayText = ChatColor.translateAlternateColorCodes('&', args[2]);
 
-        if (displayText.length() > 500) {
+        if (colouredDisplayText.length() > 500) {
             returnError(player, "Purchase messages cannot be more than 500 characters in length");
             return false;
         }
-        if (displayText.isBlank()) {
+        if (colouredDisplayText.isBlank()) {
             returnError(player, "Purchase messages cannot be blank");
             return false;
         }
@@ -70,7 +72,7 @@ public class TicketSetPurchaseMessageCommandHandler extends SyncCommandHandler {
         ItemMeta meta = ticket.getItemMeta();
         assert meta != null;
         PersistentDataContainer dataContainer = meta.getPersistentDataContainer();
-        dataContainer.set(PURCHASE_MESSAGE, PersistentDataType.STRING, displayText);
+        dataContainer.set(PURCHASE_MESSAGE, PersistentDataType.STRING, colouredDisplayText);
         ticket.setItemMeta(meta);
         player.sendMessage(ChatColor.GREEN + "Held ticket's purchase message was set successfully");
     }

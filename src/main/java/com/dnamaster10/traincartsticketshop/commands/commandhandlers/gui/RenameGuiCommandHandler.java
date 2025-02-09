@@ -1,21 +1,22 @@
 package com.dnamaster10.traincartsticketshop.commands.commandhandlers.gui;
 
 import com.dnamaster10.traincartsticketshop.commands.commandhandlers.AsyncCommandHandler;
+import com.dnamaster10.traincartsticketshop.util.database.databaseobjects.GuiDatabaseObject;
 import com.dnamaster10.traincartsticketshop.util.exceptions.ModificationException;
-import com.dnamaster10.traincartsticketshop.util.exceptions.QueryException;
-import com.dnamaster10.traincartsticketshop.util.newdatabase.accessors.GuiDataAccessor;
+import com.dnamaster10.traincartsticketshop.util.database.accessors.GuiDataAccessor;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.StringJoiner;
-
+/**
+ * The command handler for the /tshop gui rename command.
+ */
 public class RenameGuiCommandHandler extends AsyncCommandHandler {
-    //Example command: /traincartsticketshop gui setdisplayname <gui name> <gui display name>
+    //Example command: /tshop gui rename <gui ID> <gui display name>
     private String rawDisplayName;
     private String colouredDisplayName;
     private GuiDataAccessor guiAccessor;
-    private Integer guiId;
+    private GuiDatabaseObject gui;
     @Override
     protected boolean checkSync(CommandSender sender, String[] args) {
         //Check permissions
@@ -28,22 +29,15 @@ public class RenameGuiCommandHandler extends AsyncCommandHandler {
 
         //Check syntax
         if (args.length < 4) {
-            returnMissingArgumentsError(sender, "/tshop rename <gui id> <new name>");
+            returnMissingArgumentsError(sender, "/tshop gui rename <gui ID> <new name>");
             return false;
         }
-
-        //Check gui name to save on database calls
         if (!checkGuiNameSyntax(args[2])) {
             returnGuiNotFoundError(sender, args[2]);
             return false;
         }
 
-        //Build display name
-        StringJoiner stringJoiner = new StringJoiner(" ");
-        for (int i = 3; i < args.length; i++) {
-            stringJoiner.add(args[i]);
-        }
-        colouredDisplayName = ChatColor.translateAlternateColorCodes('&', stringJoiner.toString());
+        colouredDisplayName = ChatColor.translateAlternateColorCodes('&', args[3]);
         rawDisplayName = ChatColor.stripColor(colouredDisplayName);
 
         if (rawDisplayName.length() > 25) {
@@ -62,7 +56,7 @@ public class RenameGuiCommandHandler extends AsyncCommandHandler {
     }
 
     @Override
-    protected boolean checkAsync(CommandSender sender, String[] args) throws QueryException {
+    protected boolean checkAsync(CommandSender sender, String[] args) {
         guiAccessor = new GuiDataAccessor();
 
         //Get the gui id and check that it exists
@@ -70,12 +64,12 @@ public class RenameGuiCommandHandler extends AsyncCommandHandler {
             returnGuiNotFoundError(sender, args[2]);
             return false;
         }
-        guiId = guiAccessor.getGuiIdByName(args[2]);
+        gui = guiAccessor.getGuiByName(args[2]);
 
         //If sender is player, check that player is an editor of that gui
         if (sender instanceof Player p) {
             if (!p.hasPermission("traincartsticketshop.admin.gui.rename")) {
-                if (!guiAccessor.playerCanEdit(guiId, p.getUniqueId().toString())) {
+                if (!guiAccessor.playerCanEdit(gui.id(), p.getUniqueId().toString())) {
                     returnError(sender, "You do not have permission to edit that gui. Request that the owner adds you as an editor before making any changes");
                     return false;
                 }
@@ -87,7 +81,7 @@ public class RenameGuiCommandHandler extends AsyncCommandHandler {
 
     @Override
     protected void execute(CommandSender sender, String[] args) throws ModificationException {
-        guiAccessor.updateGuiDisplayName(guiId, colouredDisplayName, rawDisplayName);
+        guiAccessor.updateGuiDisplayName(gui.id(), colouredDisplayName, rawDisplayName);
         sender.sendMessage(ChatColor.GREEN + "Gui \"" + args[2] + "\"'s name was changed to \"" + colouredDisplayName + "\"");
     }
 }

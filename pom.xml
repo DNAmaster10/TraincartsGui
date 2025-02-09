@@ -14,7 +14,7 @@
   <properties>
     <java.version>1.8</java.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <project.tcversion>1.20.4-v2-SNAPSHOT</project.tcversion>
+    <project.tcversion>1.21.4-v1-SNAPSHOT</project.tcversion>
   </properties>
 
   <build>
@@ -31,7 +31,15 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
-        <version>3.2.4</version>
+        <version>3.3.0</version>
+          <configuration>
+              <relocations>
+                  <relocation>
+                      <pattern>org.bstats</pattern>
+                      <shadedPattern>com.dnamaster10.traincartsticketshop</shadedPattern>
+                  </relocation>
+              </relocations>
+          </configuration>
         <executions>
           <execution>
             <phase>package</phase>
@@ -63,13 +71,17 @@
           <id>MG-Dev Jenkins CI Maven Repository</id>
           <url>https://ci.mg-dev.eu/plugin/repository/everything</url>
       </repository>
+      <repository>
+          <id>jitpack.io</id>
+          <url>https://jitpack.io</url>
+      </repository>
   </repositories>
 
   <dependencies>
       <dependency>
           <groupId>org.spigotmc</groupId>
           <artifactId>spigot-api</artifactId>
-          <version>1.20.5-R0.1-SNAPSHOT</version>
+          <version>1.21-R0.1-SNAPSHOT</version>
           <scope>provided</scope>
       </dependency>
       <dependency>
@@ -81,7 +93,7 @@
       <dependency>
           <groupId>org.mariadb.jdbc</groupId>
           <artifactId>mariadb-java-client</artifactId>
-          <version>LATEST</version>
+          <version>3.5.1</version>
       </dependency>
       <dependency>
           <groupId>org.xerial</groupId>
@@ -91,7 +103,7 @@
       <dependency>
           <groupId>org.jetbrains</groupId>
           <artifactId>annotations</artifactId>
-          <version>RELEASE</version>
+          <version>LATEST</version>
           <scope>compile</scope>
       </dependency>
       <dependency>
@@ -104,5 +116,18 @@
           <artifactId>json</artifactId>
           <version>20231013</version>
       </dependency>
+      <dependency>
+          <groupId>org.bstats</groupId>
+          <artifactId>bstats-bukkit</artifactId>
+          <version>3.0.2</version>
+          <scope>compile</scope>
+      </dependency>
+      <dependency>
+          <groupId>com.github.MilkBowl</groupId>
+          <artifactId>VaultAPI</artifactId>
+          <version>1.7.1</version>
+          <scope>provided</scope>
+      </dependency>
   </dependencies>
+
 </project>

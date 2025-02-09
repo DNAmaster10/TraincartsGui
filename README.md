@@ -3,11 +3,11 @@ A plugin which allows players to create ticket shop guis for purchasing tickets 
 ## How to use
 - Run `/train ticket create <ticket name>` to create a Traincarts ticket.
 - Run `/tshop ticket create <ticket name> <display name of ticket to use>` to get a "gui ticket" item.
-- Run `/tshop gui create <name> <display name>` to create a shop GUI.
-- Run `/tshop gui edit <name>`
+- Run `/tshop gui create <Gui ID> <display name>` to create a shop GUI.
+- Run `/tshop gui edit <Gui ID>`
 - Drag the ticket you were given by the plugin into the inventory that opens.
  ![image](https://github.com/DNAmaster10/TraincartsTicketShop/assets/67452089/20acf26a-fb5d-461c-bbb6-c840e0ecd0b9)
-- Run `/tshop gui open <name>` to open the shop GUI. Click on a ticket to get it in your inventory.
+- Run `/tshop gui open <Gui ID>` to open the shop GUI. Click on a ticket to get it in your inventory.
 
 ## Other methods of opening the GUI
 ### Citizens NPCs (coming soon)
@@ -17,7 +17,7 @@ Create a sign with this format:
 ```
 
 [tshop]
-<gui name>
+<gui ID>
 
 ```
 ![image](https://github.com/DNAmaster10/TraincartsTicketShop/assets/67452089/8a287820-3aab-4e71-ae9a-40ebfc168b81)
@@ -34,7 +34,7 @@ To get started, you must have at least two guis already created. For example, we
 We may want to have it so that the gui `mainline` links to the second gui, `subline`.
 
 Firstly, we must create a new "link". To do this, we can run:
-- `/tshop link create <linked gui name> <display name>`
+- `/tshop link create <linked Gui ID> <display name>`
 
 In our example, this would look something like:
 - `/tshop link create subline Subline Tickets`
